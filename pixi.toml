@@ -1,0 +1,21 @@
+[workspace]
+authors = ["Albr17 <a.bramorska@nencki.edu.pl>"]
+channels = ["conda-forge"]
+name = "andani_retreat"
+platforms = ["win-64"]
+version = "0.1.0"
+
+[tasks]
+jupyter = "jupyter lab"
+
+[dependencies]
+python = ">=3.14.6,<3.15"
+jupyterlab = ">=4.6.0,<5"
+numpy = ">=2.5.0,<3"
+pandas = ">=3.0.3,<4"
+matplotlib = ">=3.11.0,<4"
+xarray = ">=2026.4.0,<2027"
+h5py = ">=3.16.0,<4"
+quantities = ">=0.16.4,<0.17"
+pip = ">=26.1.2,<27"
+

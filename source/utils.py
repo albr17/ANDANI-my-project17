@@ -45,3 +45,27 @@ def plot_cwt_spectogram(signal, frequencies=150):
     axes.set_yscale("log")
     plt.ylabel("frequency HZ")
     plt.show()
+
+def process_lfp_pca(signals, frequency):
+    fs = signals.sampling_rate
+    signals_wavelets = elephant.signal_processing.wavelet_transform(signals, frequency=[frequency], sampling_frequency=fs)
+
+    # squeeze() is (n_time, n_electrodes); transpose so electrodes are the rows
+    # to reduce the electrode direction -> C is (n_electrodes, n_electrodes)
+    wavelet_real_signals = signals_wavelets.squeeze().real.T     # (n_electrodes, n_time)
+    print(wavelet_real_signals.shape)
+
+    X = wavelet_real_signals - wavelet_real_signals.mean(axis=1, keepdims=True)
+    C = (X @ X.T) / (X.shape[1] - 1)          # (n_electrodes, n_electrodes)
+
+    eigvals, eigvecs = np.linalg.eigh(C)
+    order = np.argsort(eigvals)[::-1]
+    eigvals = np.clip(eigvals[order], 0, None)
+    eigvecs = eigvecs[:, order]
+
+    return eigvals, eigvecs, wavelet_real_signals
+
+
+
+
+# use plotly

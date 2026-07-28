@@ -2,7 +2,7 @@
 authors = ["Albr17 <a.bramorska@nencki.edu.pl>"]
 channels = ["conda-forge"]
 name = "andani_retreat"
-platforms = ["win-64", "linux-64"]
+platforms = ["win-64", "linux-64", "linux-aarch64"]
 version = "0.1.0"
 
 [tasks]

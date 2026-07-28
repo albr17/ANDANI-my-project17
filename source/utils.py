@@ -87,7 +87,9 @@ def process_lfp_pca(signals, frequency):
     wavelet_real_signals = signals_wavelets.squeeze().real.T     # (n_electrodes, n_time)
     print(wavelet_real_signals.shape)
 
-    X = wavelet_real_signals - wavelet_real_signals.mean(axis=1, keepdims=True)
+    mean_over_channels = wavelet_real_signals.mean(axis=1, keepdims=True)
+    X = wavelet_real_signals - mean_over_channels  # (n_electrodes, n_time)
+    
     C = (X @ X.T) / (X.shape[1] - 1)          # (n_electrodes, n_electrodes)
 
     eigvals, eigvecs = np.linalg.eigh(C)
@@ -95,4 +97,4 @@ def process_lfp_pca(signals, frequency):
     eigvals = np.clip(eigvals[order], 0, None)
     eigvecs = eigvecs[:, order]
 
-    return eigvals, eigvecs, wavelet_real_signals
+    return eigvals, eigvecs, wavelet_real_signals, mean_over_channels

@@ -2,5 +2,6 @@
 Data
 .vscode
 .idea
+.pkl
 .ipynb_checkpoints
 *__pycache__*

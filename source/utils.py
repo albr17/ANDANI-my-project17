@@ -47,6 +47,38 @@ def plot_cwt_spectogram(signal, frequencies=150):
     plt.show()
 
 def process_lfp_pca(signals, frequency):
+    """
+    Compute PCA of the wavelet-transformed LFP across electrodes.
+
+    The function computes the complex wavelet transform using Elephant 
+    wavelet_transform method for a single frequency. Then takes the
+    real part, and performs PCA across electrodes by eigendecomposing
+    the electrode-electrode covariance matrix.
+
+    Parameters
+    ----------
+    signals : neo.AnalogSignal
+        Input multi-electrode signal to analyze. The signal must contain
+        sampling rate information (`sampling_rate`) and be compatible with
+        `elephant.signal_processing.wavelet_transform`.
+
+    frequency : float
+        Frequency (Hz) at which the wavelet transform is computed.
+
+    Returns
+    -------
+    eigvals : ndarray, shape (n_electrodes,)
+        Eigenvalues of the electrode covariance matrix, sorted in
+        descending order and clipped to be non-negative.
+
+    eigvecs : ndarray, shape (n_electrodes, n_electrodes)
+        Corresponding eigenvectors (principal components), columns ordered
+        to match `eigvals`.
+
+    wavelet_real_signals : ndarray, shape (n_electrodes, n_time)
+        Real part of the wavelet-transformed signal, mean-centered input
+        to the PCA.
+    """
     fs = signals.sampling_rate
     signals_wavelets = elephant.signal_processing.wavelet_transform(signals, frequency=[frequency], sampling_frequency=fs)
 
@@ -64,8 +96,3 @@ def process_lfp_pca(signals, frequency):
     eigvecs = eigvecs[:, order]
 
     return eigvals, eigvecs, wavelet_real_signals
-
-
-
-
-# use plotly

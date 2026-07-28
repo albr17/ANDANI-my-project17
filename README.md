@@ -29,6 +29,18 @@ The dataset includes:
 3. SpikeTrain (unit_38)
 3. SpikeTrain (unit_60)
 
+## Electrode Positions Description
+
+A Python pickle file called *channel_positions.pkl* containing a dictionary that maps each NeuroNexus A8×8 probe channel ID to its two-dimensional position on the probe.
+`` dict[int, tuple[int, int]] ``
+
+**Dictionary format**
+Key: Channel ID (1–64)
+Value: (x, y) coordinate
+where:
+x (0–7) is the shank index, counted from left to right.
+y (0–7) is the electrode position along the shank, counted from the probe tip (bottom) toward the probe base (top).
+
 
 ## Experimental Design
 

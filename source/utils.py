@@ -1,5 +1,8 @@
+import numpy as np
+import elephant
+import matplotlib.pyplot as plt
 
-def plot_cwt_spectogram(signal=signal,frequencies=150):
+def plot_cwt_spectogram(signal, frequencies=150):
     """
     Plot a Continuous Wavelet Transform (CWT) spectrogram of a signal.
 
@@ -42,5 +45,3 @@ def plot_cwt_spectogram(signal=signal,frequencies=150):
     axes.set_yscale("log")
     plt.ylabel("frequency HZ")
     plt.show()
-
-plot_cwt_spectogram(signal,frequencies)

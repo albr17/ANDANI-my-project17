@@ -23,6 +23,7 @@ is well below the precision the downstream correlations need.
 Run as VS Code interactive cells (`# %%`).
 """
 
+
 # %% ---------------------------------------------------------------------
 # 0. Imports and configuration
 # -------------------------------------------------------------------------
@@ -37,9 +38,9 @@ from neo.io import NixIO
 from sklearn.decomposition import PCA
 from viziphant.rasterplot import rasterplot
 from viziphant.statistics import plot_instantaneous_rates_colormesh
-
+%matplotlib inline
 sys.path.insert(0, "../source")
-from source.utils import SPIKE_COLOR, mark_event, plot_scree, use_analysis_style
+from utils import SPIKE_COLOR, mark_event, plot_scree, use_analysis_style
 
 NIX_FILE = "../data/rat_retreat_meta_1kHz.nix"
 SPIKE_PCA_FILE = "../data/spike_pca.npz"    # written at the end of this script
@@ -79,6 +80,11 @@ unit_labels = [f"{st.annotations['spike_id']} "
 print(f"{block.description} | {seg.description}")
 print(f"recording: {recording_duration}, ketamine at {ketamine_time}")
 print(f"{n_neurons} units (SU = single unit, MU = multi unit): {unit_labels}")
+
+
+# %% 
+for st in sts:
+    st.t_stop = recording_duration
 
 
 # %% ---------------------------------------------------------------------

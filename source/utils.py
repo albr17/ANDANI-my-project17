@@ -2,6 +2,77 @@ import numpy as np
 import elephant
 import matplotlib.pyplot as plt
 
+# Shared figure style, so the spike-only and the combined analysis produce
+# figures that can be put side by side.
+EVENT_COLOR = "crimson"
+SPIKE_COLOR = "#1f77b4"
+LFP_COLOR = "#d95f02"
+
+
+def use_analysis_style():
+    """Apply the matplotlib defaults shared by the analysis scripts."""
+    plt.rcParams.update({"figure.constrained_layout.use": True,
+                         "axes.grid": True,
+                         "grid.alpha": 0.25,
+                         "axes.titlesize": 11})
+
+
+def mark_event(ax, time, label="ketamine injection"):
+    """Draw a vertical marker at `time` (seconds) on a time-domain axis."""
+    ax.axvline(float(time), color=EVENT_COLOR, ls="--", lw=1.5, label=label)
+
+
+def zscore(x, axis=0):
+    """Z-score along `axis` (used to draw signals on a common scale)."""
+    return (x - np.mean(x, axis=axis)) / np.std(x, axis=axis)
+
+
+def plot_scree(explained_ratio, title, ax, threshold=0.9):
+    """
+    Plot per-component and cumulative explained variance on one axis.
+
+    Parameters
+    ----------
+    explained_ratio : ndarray
+        Fraction of variance carried by each component, e.g.
+        ``sklearn.decomposition.PCA.explained_variance_ratio_``.
+
+    title : str
+        Title of the axes.
+
+    ax : matplotlib.axes.Axes
+        Axes to draw on.
+
+    threshold : float
+        Cumulative variance target to mark, as a fraction.
+
+    Returns
+    -------
+    cumulative : ndarray
+        Cumulative explained-variance ratio.
+
+    n_needed : int
+        Number of components needed to pass `threshold`. Note this is a count,
+        not a 0-based index: reaching the threshold at index 8 means 9
+        components are needed.
+    """
+    cumulative = np.cumsum(explained_ratio)
+    n_needed = int(np.argmax(cumulative > threshold)) + 1
+    components = np.arange(1, cumulative.size + 1)
+
+    ax.bar(components, explained_ratio, color="0.7", label="per component")
+    ax.plot(components, cumulative, "o-", ms=4, color=SPIKE_COLOR, label="cumulative")
+    ax.axhline(threshold, color=EVENT_COLOR, ls=":", lw=1.2,
+               label=f"{threshold:.0%} of variance")
+    ax.axvline(n_needed, color=EVENT_COLOR, ls="--", lw=1.2,
+               label=f"{n_needed} components needed")
+    ax.set_xlabel("Principal component")
+    ax.set_ylabel("Explained variance (fraction)")
+    ax.set_title(title)
+    ax.legend(fontsize=8)
+    return cumulative, n_needed
+
+
 def plot_cwt_spectogram(signal, frequencies=150):
     """
     Plot a Continuous Wavelet Transform (CWT) spectrogram of a signal.
@@ -89,7 +160,7 @@ def process_lfp_pca(signals, frequency):
 
     mean_over_channels = wavelet_real_signals.mean(axis=1, keepdims=True)
     X = wavelet_real_signals - mean_over_channels  # (n_electrodes, n_time)
-    
+
     C = (X @ X.T) / (X.shape[1] - 1)          # (n_electrodes, n_electrodes)
 
     eigvals, eigvecs = np.linalg.eigh(C)
@@ -98,3 +169,19 @@ def process_lfp_pca(signals, frequency):
     eigvecs = eigvecs[:, order]
 
     return eigvals, eigvecs, wavelet_real_signals, mean_over_channels
+
+def perform_pca(X):
+
+
+    mean_over_channel = X.mean(axis=1, keepdims=True)
+    X_C = X - mean_over_channel  # (n_electrodes, n_time)
+
+    C = (X_C @ X_C.T) / (X_C.shape[1] - 1)          # (n_electrodes, n_electrodes)
+
+    eigvals, eigvecs = np.linalg.eigh(C)
+    order = np.argsort(eigvals)[::-1]
+    eigvals = np.clip(eigvals[order], 0, None)
+    eigvecs = eigvecs[:, order]
+
+    return eigvals, eigvecs, 
+
